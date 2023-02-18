@@ -18,20 +18,35 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   // MyHomePage({super.key});
-
-  // late String titleInput;
-  // late String amountInput;
-
   final titleController = TextEditingController();
   final amountController = TextEditingController();
+
+  void startAddNewTransaction(
+    BuildContext ctx,
+  ) {
+    showModalBottomSheet(context: ctx, builder: (_) {
+      return NewTransaction(_addNewTransaction)
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Personal Expenses Tracker"),
+        actions: [
+          IconButton(
+            onPressed: null,
+            icon: Icon(Icons.add),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -47,6 +62,11 @@ class MyHomePage extends StatelessWidget {
                   )),
               UserTransactions(),
             ]),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {},
       ),
     );
   }
