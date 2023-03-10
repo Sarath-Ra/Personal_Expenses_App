@@ -4,44 +4,62 @@ import 'package:personal_expenses_app/models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> _userTransaction;
+  final Function _deleteTransaction;
 
-  TransactionList(this._userTransaction);
+  TransactionList(this._userTransaction, this._deleteTransaction);
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 500,
-      child: _userTransaction.isEmpty ? Column(
-        children: [
-          Text("No Transactions Added Yet !!", style: Theme.of(context).textTheme.headline6,),
-          SizedBox(height: 10,),
-          Container(height: 350, child: Image.asset('assets/images/waiting.png', fit: BoxFit.cover,)),
-        ],
-      )
-      : ListView.builder(
-        itemBuilder: (ctx, index) {
-          return Card(
-            elevation: 5,
-            margin: EdgeInsets.symmetric(
-              vertical: 8,
-              horizontal: 5
-            ),
-            child: ListTile(
-              leading: CircleAvatar(  // instead of having a circle avatar we can have a container and we can decide the shape and color it and specify the height and weight to create our own box
-                radius:  30,
-                child: Padding(
-                  padding: EdgeInsets.all(6),
-                  child: FittedBox(
-                    child: Text("\$${_userTransaction[index].amount}")
-                  ),
+      child: _userTransaction.isEmpty
+          ? Column(
+              children: [
+                Text(
+                  "No Transactions Added Yet !!",
+                  style: Theme.of(context).textTheme.headline6,
                 ),
-              ),
-              title: Text(_userTransaction[index].title, style: Theme.of(context).textTheme.titleLarge,),
-              subtitle: Text(DateFormat.yMMMd().format(_userTransaction[index].date)),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                    height: 350,
+                    child: Image.asset(
+                      'assets/images/waiting.png',
+                      fit: BoxFit.cover,
+                    )),
+              ],
+            )
+          : ListView.builder(
+              itemBuilder: (ctx, index) {
+                return Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      // instead of having a circle avatar we can have a container and we can decide the shape and color it and specify the height and weight to create our own box
+                      radius: 30,
+                      child: Padding(
+                        padding: EdgeInsets.all(6),
+                        child: FittedBox(
+                            child: Text("\$${_userTransaction[index].amount}")),
+                      ),
+                    ),
+                    title: Text(
+                      _userTransaction[index].title,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    subtitle: Text(DateFormat.yMMMd()
+                        .format(_userTransaction[index].date)),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      color: Theme.of(context).errorColor,
+                      onPressed: () => _deleteTransaction(_userTransaction[index].id),
+                    ),
+                  ),
+                );
+              },
+              itemCount: _userTransaction.length,
             ),
-          );
-        },
-        itemCount: _userTransaction.length,
-      ),
     );
   }
 }
