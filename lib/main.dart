@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:personal_expenses_app/Widgets/chart.dart';
 import 'package:personal_expenses_app/Widgets/new_transaction.dart';
@@ -6,6 +7,9 @@ import 'package:personal_expenses_app/Widgets/transaction_list.dart';
 import 'package:personal_expenses_app/models/transaction.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(const MyApp());
 }
 
@@ -68,6 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
     //     id: "t2", title: "Groceries", amount: 49.99, date: DateTime.now())
   ];
 
+  bool _showChart = false;
+
   List<Transaction> get _recentTransactions {
     return _userTransaction.where((tx) {
       return tx.date.isAfter(DateTime.now().subtract(
@@ -96,26 +102,50 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // backgroundColor: Theme.of(context).primaryColor,
-        title: Text(
-          "Personal Expenses",
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => _startAddNewTransaction(context),
-            icon: Icon(Icons.add),
-          ),
-        ],
+    final appBar = AppBar(
+      // backgroundColor: Theme.of(context).primaryColor,
+      title: Text(
+        "Personal Expenses",
       ),
+      actions: [
+        IconButton(
+          onPressed: () => _startAddNewTransaction(context),
+          icon: Icon(Icons.add),
+        ),
+      ],
+    );
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
             // mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Chart(_recentTransactions),
-              TransactionList(_userTransaction, _deleteTransaction),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Show Chart'),
+                  Switch(
+                      value: _showChart,
+                      onChanged: (val) {
+                        setState(() {
+                          _showChart = val;
+                        });
+                      })
+                ],
+              ),
+              _showChart ? Container(
+                  height: (MediaQuery.of(context).size.height -
+                          appBar.preferredSize.height -
+                          MediaQuery.of(context).padding.top) *
+                      0.3,
+                  child: Chart(_recentTransactions))
+              : 
+              Container(
+                  height: (MediaQuery.of(context).size.height -
+                          appBar.preferredSize.height) *
+                      0.7,
+                  child: TransactionList(_userTransaction, _deleteTransaction)),
             ]),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
